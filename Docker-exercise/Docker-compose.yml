@@ -1,0 +1,38 @@
+version: '3'
+services:
+  prometheus:
+    build:
+      context: ./prom-server
+    container_name: prometheus
+    networks:
+      - prom
+    ports:
+      - "9090:9090"
+    depends_on:
+      - node-exporter
+      - flask-app
+
+
+  node-exporter:
+    build:
+      context: ./node_exporter
+    networks:
+      - prom
+    container_name: node-exporter
+    ports:
+      - "9100:9100"
+
+  flask-app:
+    build:
+      context: ./python-server
+    container_name: flask-app
+    networks:
+      - prom
+    ports:
+      - "5005:5005"
+
+volumes:
+  prometheus-data:
+networks:
+  prom:
+    driver: bridge
